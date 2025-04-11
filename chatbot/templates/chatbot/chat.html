@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ABC Lighting Chatbot</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(120deg, #1a2a6c, #b21f1f, #fdbb2d);
+      background-size: 600% 600%;
+      animation: gradientBG 15s ease infinite;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+    }
+    
+    @keyframes gradientBG {
+      0% { background-position: 0% 50% }
+      50% { background-position: 100% 50% }
+      100% { background-position: 0% 50% }
+    }
+    
+    .chat-container {
+      width: 100%;
+      max-width: 400px;
+      height: 600px;
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+    
+    .chat-container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    }
+    
+    .chat-header {
+      background: linear-gradient(to right, #4a00e0, #8e2de2);
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      position: relative;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .chat-logo {
+      width: 40px;
+      height: 40px;
+      background: #fff;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+    
+    .chat-logo i {
+      color: #8e2de2;
+      font-size: 20px;
+    }
+    
+    .chat-messages {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background-color: #f8f9fa;
+      scrollbar-width: thin;
+      scrollbar-color: #8e2de2 #f1f1f1;
+    }
+    
+    .chat-messages::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .chat-messages::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    
+    .chat-messages::-webkit-scrollbar-thumb {
+      background: #8e2de2;
+      border-radius: 10px;
+    }
+    
+    .chat-input-area {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      background-color: #fff;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .chat-input-area input {
+      flex: 1;
+      padding: 12px 15px;
+      border: 1px solid #e0e0e0;
+      border-radius: 20px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.3s;
+      font-family: 'Poppins', sans-serif;
+      background: #f8f9fa;
+    }
+    
+    .chat-input-area input:focus {
+      border-color: #8e2de2;
+      box-shadow: 0 0 0 3px rgba(142, 45, 226, 0.2);
+    }
+    
+    .chat-input-area button {
+      background: linear-gradient(to right, #4a00e0, #8e2de2);
+      border: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      color: #fff;
+      cursor: pointer;
+      font-size: 1.2rem;
+      margin-left: 10px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 8px rgba(142, 45, 226, 0.3);
+    }
+    
+    .chat-input-area button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 12px rgba(142, 45, 226, 0.5);
+    }
+    
+    .message {
+      margin: 8px 0;
+      padding: 12px 16px;
+      border-radius: 18px;
+      max-width: 85%;
+      opacity: 0;
+      animation: fadeIn 0.4s forwards;
+      line-height: 1.5;
+      font-size: 0.95rem;
+      position: relative;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    
+    .user {
+      background: linear-gradient(to right, #4a00e0, #8e2de2);
+      color: #fff;
+      margin-left: auto;
+      border-bottom-right-radius: 4px;
+    }
+    
+    .bot {
+      background: white;
+      color: #333;
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .typing-indicator {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 16px;
+      background: white;
+      border-radius: 18px;
+      margin-bottom: 10px;
+    }
+    
+    .typing-indicator span {
+      width: 8px;
+      height: 8px;
+      background: #8e2de2;
+      border-radius: 50%;
+      display: inline-block;
+      margin: 0 2px;
+      opacity: 0.6;
+    }
+    
+    .typing-indicator span:nth-child(1) {
+      animation: bounce 1s infinite 0.2s;
+    }
+    
+    .typing-indicator span:nth-child(2) {
+      animation: bounce 1s infinite 0.4s;
+    }
+    
+    .typing-indicator span:nth-child(3) {
+      animation: bounce 1s infinite 0.6s;
+    }
+    
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    
+    @media (max-width: 500px) {
+      .chat-container {
+        height: 100vh;
+        max-width: 100%;
+        border-radius: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">
+      <span class="chat-logo">
+        <i class="fa-solid fa-lightbulb"></i>
+      </span>
+      ABC Lighting Assistant
+    </div>
+    <div class="chat-messages" id="chat-messages">
+      <!-- Chat messages will be appended here -->
+      <div class="message bot">
+        Hello! I'm your ABC Lighting Assistant. How can I help you with your lighting needs today?
+      </div>
+    </div>
+    <div class="chat-input-area">
+      <input type="text" id="user-input" placeholder="Type your message...">
+      <button id="send-button"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+  </div>
+
+  <script>
+    // Add event listeners for button click and Enter key
+    document.getElementById("send-button").addEventListener("click", sendMessage);
+    document.getElementById("user-input").addEventListener("keyup", function(e) {
+      if (e.key === "Enter") {
+          sendMessage();
+      }
+    });
+
+    function sendMessage() {
+      let inputField = document.getElementById("user-input");
+      let message = inputField.value.trim();
+      if (message === "") return;
+      
+      // Append the user's message to the chat
+      appendMessage("<strong>You:</strong> " + message, "user");
+      
+      // Clear the input field
+      inputField.value = "";
+      
+      // Show typing indicator
+      showTypingIndicator();
+      
+      // Send the message to our API endpoint
+      fetch("/api/converse/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCookie("csrftoken")
+        },
+        body: JSON.stringify({ message: message })
+      })
+      .then(response => response.json())
+      .then(data => {
+        removeTypingIndicator();
+        // Append the bot's response (expected to include HTML such as <img> tags)
+        appendMessage("<strong>Bot:</strong> " + data.response, "bot");
+      })
+      .catch(error => {
+        removeTypingIndicator();
+        appendMessage("<strong>Bot:</strong> Sorry, there was an error. Please try again.", "bot");
+        console.error("Error:", error);
+      });
+    }
+
+    function appendMessage(message, type) {
+      let messagesDiv = document.getElementById("chat-messages");
+      let messageElem = document.createElement("div");
+      messageElem.classList.add("message", type);
+      // Using innerHTML to render HTML returned by backend (including <img> tags)
+      messageElem.innerHTML = message;
+      messagesDiv.appendChild(messageElem);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight; // Auto-scroll to new message
+    }
+    
+    function showTypingIndicator() {
+      let messagesDiv = document.getElementById("chat-messages");
+      let typingIndicator = document.createElement("div");
+      typingIndicator.classList.add("typing-indicator");
+      typingIndicator.id = "typing-indicator";
+      typingIndicator.innerHTML = '<span></span><span></span><span></span>';
+      messagesDiv.appendChild(typingIndicator);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+    
+    function removeTypingIndicator() {
+      let typingIndicator = document.getElementById("typing-indicator");
+      if (typingIndicator) {
+        typingIndicator.remove();
+      }
+    }
+
+    // Function to extract CSRF token from cookies
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== "") {
+          let cookies = document.cookie.split(";");
+          for (let i = 0; i < cookies.length; i++) {
+              let cookie = cookies[i].trim();
+              if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+    }
+  </script>
+</body>
+</html>
